@@ -6,8 +6,7 @@
 # This is based on the C implementation of COBS by Jacques Fortier
 
 # Encodes a list or tuple of bytes (data) using COBS
-# Returns a tuple containing the length of the encoded data
-# and a list containing the data
+# Returns the encoded data
 def cobs_encode(data = list()):
     if not type(data) == list and not type(data) == tuple:
         raise TypeError("data must be a list or tuple")
@@ -40,7 +39,7 @@ def cobs_encode(data = list()):
 
     output[code_index] = code
 
-    return (write_index, output)
+    return output
 
 # Decodes a list or tuple of bytes (data) from COBS
 # Returns a tuple containing the length of the decoded data
@@ -71,17 +70,16 @@ def cobs_decode(data = list()):
             output[write_index] = 0x00
             write_index += 1
 
-    return (write_index - 1, output[:write_index - 1])
+    return output[:write_index]
 
 if __name__ == '__main__':
     dat = (0x11, 0x00, 0x22, 0x42, 0x00, 0xff)
     print "Original Length: {0} | {1}".format(len(dat), [hex(x) for x in dat])
 
-    res_len, res = cobs_encode(dat)
-    print "Encoded length:  {0} | {1}".format(res_len, [hex(x) for x in res])
+    res = cobs_encode(dat)
+    print "Encoded length:  {0} | {1}".format(len(res), [hex(x) for x in res])
 
     dat = list(res)
-    dat.append(0x00)
 
-    res_len, res = cobs_decode(dat)
-    print "Decoded Length:  {0} | {1}".format(res_len, [hex(x) for x in res])
+    res = cobs_decode(dat)
+    print "Decoded Length:  {0} | {1}".format(len(res), [hex(x) for x in res])
